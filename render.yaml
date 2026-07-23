@@ -16,8 +16,6 @@ services:
     dockerfilePath: ./server/Dockerfile
     dockerContext: ./server
     healthCheckPath: /health
-    # Apply migrations before the new instance starts taking traffic.
-    preDeployCommand: npx prisma migrate deploy
     envVars:
       - key: NODE_ENV
         value: production
