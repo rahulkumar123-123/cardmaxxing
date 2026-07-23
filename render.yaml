@@ -5,6 +5,7 @@ databases:
     databaseName: cardmaxxing
     user: cardmaxxing
     plan: free
+    region: singapore
     postgresMajorVersion: '16'
 
 services:
