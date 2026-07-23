@@ -1,0 +1,4 @@
+node_modules
+dist
+coverage
+server/prisma/migrations

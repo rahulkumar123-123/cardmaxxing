@@ -1,0 +1,164 @@
+# Repository tree
+
+Generated from the shipped source (no `node_modules`, `dist` or `.env`).
+
+```
+.editorconfig
+.env.example
+.github
+  workflows
+    ci.yml
+.gitignore
+.husky
+  pre-commit
+.prettierignore
+.prettierrc
+PROJECT_STATE.md
+README.md
+docker-compose.yml
+docs
+  API.md
+  ARCHITECTURE.md
+  DEPLOYMENT.md
+  REPOSITORY_TREE.md
+eslint.config.js
+package-lock.json
+package.json
+render.yaml
+server
+  .env.example
+  Dockerfile
+  package-lock.json
+  package.json
+  prisma
+    data
+      cards.ts
+    migrations
+      20260720000000_init
+        migration.sql
+      migration_lock.toml
+    schema.prisma
+    seed.ts
+  src
+    app.ts
+    config
+      env.ts
+    domain
+      types.ts
+    index.ts
+    lib
+      errors.ts
+      http.ts
+      logger.ts
+      prisma.ts
+    middleware
+      auth.ts
+      error.ts
+      rateLimit.ts
+      validate.ts
+    modules
+      ai
+        explainer.ts
+      auth
+        controller.ts
+        routes.ts
+        schemas.ts
+        service.ts
+        tokens.ts
+      cards
+        controller.ts
+        routes.ts
+        schemas.ts
+        service.ts
+      favorites
+        routes.ts
+      history
+        routes.ts
+      recommendations
+        engine.test.ts
+        engine.ts
+        routes.ts
+        schemas.ts
+        service.ts
+        weights.ts
+    test
+      api.test.ts
+      fixtures.ts
+      setup.ts
+    types
+      express.d.ts
+  tsconfig.build.json
+  tsconfig.json
+  vitest.config.ts
+web
+  Dockerfile
+  index.html
+  nginx.conf
+  package-lock.json
+  package.json
+  postcss.config.js
+  public
+    favicon.svg
+  src
+    App.tsx
+    components
+      cards
+        CardFace.tsx
+        CardTile.tsx
+        CompareTable.tsx
+        FilterRail.tsx
+        ScoreBar.tsx
+      home
+        FannedStack.tsx
+        Hero.tsx
+        ScenarioChips.tsx
+      layout
+        Footer.tsx
+        Layout.tsx
+        Navbar.tsx
+        RequireAuth.tsx
+      ui
+        Badge.tsx
+        Button.tsx
+        EmptyState.tsx
+        ErrorBoundary.tsx
+        Input.tsx
+        Select.tsx
+        Skeleton.tsx
+        Toggle.tsx
+    hooks
+      useAsync.ts
+      useDebounce.ts
+    index.css
+    lib
+      api.ts
+      cn.ts
+      format.ts
+      scenarios.ts
+    main.tsx
+    pages
+      CardDetail.tsx
+      Catalog.tsx
+      Compare.tsx
+      Dashboard.tsx
+      Favorites.tsx
+      History.tsx
+      Home.tsx
+      Login.tsx
+      NotFound.tsx
+      Recommend.tsx
+      Register.tsx
+    router.tsx
+    stores
+      auth.ts
+      compare.ts
+      favorites.ts
+      theme.ts
+    types
+      index.ts
+    vite-env.d.ts
+  tailwind.config.ts
+  tsconfig.json
+  vercel.json
+  vite.config.ts
+```

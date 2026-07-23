@@ -1,0 +1,81 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: light;
+  }
+  .dark {
+    color-scheme: dark;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-ink-50 font-sans text-ink-900 antialiased dark:bg-ink-950 dark:text-ink-100;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-display tracking-tight;
+  }
+
+  :focus-visible {
+    @apply outline-none ring-2 ring-indigo-500 ring-offset-2 ring-offset-white dark:ring-offset-ink-950;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer components {
+  .surface {
+    @apply rounded-2xl border border-ink-200 bg-white shadow-card dark:border-ink-800 dark:bg-ink-900;
+  }
+
+  .numeric {
+    @apply font-mono tabular-nums;
+  }
+
+  .link {
+    @apply text-indigo-600 underline-offset-4 hover:underline dark:text-indigo-400;
+  }
+}
+
+/* Credit-card face used by the fanned hero stack and the catalogue tiles. */
+.card-face {
+  aspect-ratio: 1.586 / 1;
+  border-radius: 1rem;
+  position: relative;
+  overflow: hidden;
+  box-shadow:
+    0 1px 1px rgba(15, 23, 42, 0.15),
+    0 18px 40px -18px rgba(15, 23, 42, 0.55);
+}
+
+.card-face::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    115deg,
+    rgba(255, 255, 255, 0.28) 0%,
+    transparent 42%,
+    transparent 62%,
+    rgba(255, 255, 255, 0.12) 100%
+  );
+  pointer-events: none;
+}

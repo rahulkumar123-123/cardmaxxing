@@ -1,0 +1,206 @@
+// CardMaxxing — Prisma schema
+// Datasource: PostgreSQL.
+
+generator client {
+  provider = "prisma-client-js"
+  // debian-openssl-3.0.x is required for the Render / node:22-slim runtime image.
+  // Without it Prisma throws PrismaClientInitializationError at boot on Render.
+  binaryTargets = ["native", "debian-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum CardNetwork {
+  VISA
+  MASTERCARD
+  RUPAY
+  AMEX
+  DINERS
+}
+
+enum CardCategory {
+  CASHBACK
+  REWARDS
+  TRAVEL
+  FUEL
+  SHOPPING
+  LIFESTYLE
+  BUSINESS
+  SECURED
+  STUDENT
+}
+
+enum CardTier {
+  ENTRY
+  MID
+  PREMIUM
+  SUPER_PREMIUM
+}
+
+enum RewardType {
+  CASHBACK
+  POINTS
+  MILES
+  VOUCHERS
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String
+  role         Role     @default(USER)
+  // Optional profile signals reused as recommendation defaults
+  monthlyIncome     Int?
+  creditScore       Int?
+  city              String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  sessions     Session[]
+  favorites    Favorite[]
+  recommendations RecommendationHistory[]
+
+  @@index([createdAt])
+  @@map("users")
+}
+
+/// Refresh-token sessions. Only the SHA-256 hash of the refresh token is stored.
+model Session {
+  id            String   @id @default(cuid())
+  userId        String
+  refreshTokenHash String @unique
+  userAgent     String?
+  ipAddress     String?
+  expiresAt     DateTime
+  revokedAt     DateTime?
+  createdAt     DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("sessions")
+}
+
+model Card {
+  id          String       @id @default(cuid())
+  slug        String       @unique
+  name        String
+  issuer      String
+  network     CardNetwork
+  category    CardCategory
+  tier        CardTier
+  summary     String
+
+  // Fees (INR, exclusive of GST)
+  joiningFee      Int
+  annualFee       Int
+  feeWaiverSpend  Int? // annual spend that waives the renewal fee
+  forexMarkup     Float // percentage
+
+  // Eligibility
+  minIncomeSalaried     Int
+  minIncomeSelfEmployed Int
+  minAge                Int    @default(21)
+  maxAge                Int    @default(60)
+  minCreditScore        Int    @default(700)
+
+  // Rewards
+  rewardType        RewardType
+  baseRewardRate    Float // effective percentage value back on general spends
+  rewardMultipliers Json   // Record<SpendCategory, number> — accelerated effective rate per category
+  cappedMonthlyReward Int? // INR cap on accelerated rewards per month
+  welcomeBenefit    String?
+  milestoneBenefit  String?
+
+  // Benefits
+  domesticLoungeVisits      Int @default(0) // per year
+  internationalLoungeVisits Int @default(0) // per year
+  fuelSurchargeWaiver       Boolean @default(false)
+  fuelWaiverMonthlyCap      Int?
+  golfBenefit               Boolean @default(false)
+  insuranceCoverInr         Int?
+  conciergeService          Boolean @default(false)
+
+  // Meta
+  highlights  String[]
+  tags        String[]
+  imageUrl    String?
+  officialUrl String
+  rating      Float   @default(0)
+  popularity  Int     @default(0)
+  isActive    Boolean @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  favorites Favorite[]
+  recommendationItems RecommendationItem[]
+
+  @@index([issuer])
+  @@index([category])
+  @@index([tier])
+  @@index([annualFee])
+  @@index([popularity])
+  @@index([isActive, popularity])
+  @@map("cards")
+}
+
+model Favorite {
+  id        String   @id @default(cuid())
+  userId    String
+  cardId    String
+  note      String?
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  card Card @relation(fields: [cardId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, cardId])
+  @@index([userId, createdAt])
+  @@map("favorites")
+}
+
+model RecommendationHistory {
+  id        String   @id @default(cuid())
+  userId    String
+  /// Frozen copy of the preference payload used to produce this run
+  preferences Json
+  engineVersion String @default("1.0.0")
+  explanation   String?
+  aiGenerated   Boolean @default(false)
+  createdAt DateTime @default(now())
+
+  user  User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  items RecommendationItem[]
+
+  @@index([userId, createdAt])
+  @@map("recommendation_history")
+}
+
+model RecommendationItem {
+  id               String @id @default(cuid())
+  recommendationId String
+  cardId           String
+  rank             Int
+  score            Float
+  /// Per-factor score breakdown produced by the deterministic engine
+  breakdown        Json
+  reasons          String[]
+
+  recommendation RecommendationHistory @relation(fields: [recommendationId], references: [id], onDelete: Cascade)
+  card           Card                  @relation(fields: [cardId], references: [id], onDelete: Cascade)
+
+  @@unique([recommendationId, cardId])
+  @@index([recommendationId, rank])
+  @@map("recommendation_items")
+}
